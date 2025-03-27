@@ -13,3 +13,6 @@ Inotebook is a web application that allows users to take notes and store them in
 ### User Profile
 * Edit user profile
 * Display user profile
+
+
+--Made by Ro706
