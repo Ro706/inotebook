@@ -1,16 +1,17 @@
 import React from "react";
-import {NoteProvider} from "./noteContext";
+import { NoteProvider } from "./noteContext";
 
-const NotesState = () => {
+const NoteState = (props) => {
     const state = {
-        "name" : "Rohit",
-        "class" : "5b"
-    }
+        name: "Rohit",
+        class: "5b"
+    };
+    
     return (
         <NoteProvider value={state}>
-            {props.chilldren}
+            {props.children}
         </NoteProvider>
-    )
+    );
 }
 
-export default NotesState 
+export default NoteState;

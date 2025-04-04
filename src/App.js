@@ -4,9 +4,11 @@ import Home from './components/Home';
 import About from './components/About';
 import Navbar from './components/Navbar';
 import Pagenotfound from './components/Pagenotfound';
+import NoteState from './context/notes/NoteStates';
 function App() {
   return (
     <>
+    <NoteState>
       <Router>
         <Navbar />
         <Routes>
@@ -15,6 +17,8 @@ function App() {
           <Route path="*" element={<Pagenotfound />} />
         </Routes>
       </Router>
+      </NoteState>
+
     </>
   );
 }
