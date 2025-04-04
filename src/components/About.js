@@ -5,6 +5,7 @@ export default function About() {
   const a = useContext(noteContext)
   useEffect(() => {
     a.update()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   return (
     <div>
