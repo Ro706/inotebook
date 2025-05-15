@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Home from './components/Home';
 import About from './components/About';
 import Navbar from './components/Navbar';
+import Alert from './components/Alert';
 import Pagenotfound from './components/Pagenotfound';
 import NoteState from './context/notes/NoteStates';
 function App() {
@@ -11,6 +12,7 @@ function App() {
     <NoteState>
       <Router>
         <Navbar />
+        <Alert message="Welcome to iNotebook"/>
         <div className="container">
         <Routes>
           <Route path="/" element={<Home />} />

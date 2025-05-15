@@ -1,13 +1,13 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Link, useLocation } from "react-router-dom";
 
 const Navbar = () => {
   let location = useLocation();
 
-  useEffect(() => {
-    // Import Bootstrap CSS
-    console.log(location);
-  }, [location]); // Corrected the typo here
+  // useEffect(() => {
+  //   // Import Bootstrap CSS
+  //   console.log(location);
+  // }, [location]); // Corrected the typo here
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
