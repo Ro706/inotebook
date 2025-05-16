@@ -1,70 +1,126 @@
-import React, { useState } from "react";
-import NoteContext from "./noteContext"; // Ensure correct import
+import NoteContext from "./noteContext";
+import { useState } from "react";
+import Alert from "../../components/Alert";
 
 const NoteState = (props) => {
-    const notesInitial = [
-        {
-            _id: "6826490fd8771742cd18991b",
-            user: "6772bd596312abbb8d0c1ee3",
-            title: "Good morning",
-            description: "hello world this is monu",
-            tag: "python",
-            date: "2025-05-15T20:05:35.650Z",
-            __v: 0
+  const host = "http://localhost:5000"; // Ensure this matches backend API
+  const notesInitial = [];
+  const [notes, setNotes] = useState(notesInitial);
+  const [alert, setAlert] = useState(null); // ✅ Added alert state
+
+  // Show Alert Function
+  const showAlert = (message, type) => {
+    setAlert({ message, type });
+    setTimeout(() => {
+      setAlert(null);
+    }, 2000);
+  };
+
+  // Get all Notes
+  const getNotes = async () => {
+    try {
+      const response = await fetch(`${host}/api/notes/fetchallnotes`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "auth-token": localStorage.getItem("token") || "",
         },
-        {
-            _id: "6826492ad8771742cd18991e",
-            user: "6772bd596312abbb8d0c1ee3",
-            title: "Good night",
-            description: "bye rohit",
-            tag: "python",
-            date: "2025-05-15T20:06:02.650Z",
-            __v: 0
-        }
-    ];
+      });
 
-    const [notes, setNotes] = useState(notesInitial);
+      if (!response.ok) {
+        throw new Error("Failed to fetch notes");
+      }
 
-    // Add a new note
-    const addNote = (title, description, tag) => {
-        const note = {
-            _id: Date.now().toString(), // Generate a unique ID dynamically
-            user: "6772bd596312abbb8d0c1ee3",
-            title,
-            description,
-            tag,
-            date: new Date().toISOString(),
-            __v: 0
-        };
-        setNotes([...notes, note]);
-        console.log("Added a new note:", note);
-    };
+      const json = await response.json();
+      setNotes(json);
+    } catch (error) {
+      console.error("Error fetching notes:", error);
+      showAlert("Error fetching notes", "danger");
+    }
+  };
 
-    // Delete a note
-    const deleteNote = (id) => {
-        console.log("Deleting a note with ID:", id);
-        const newNotes = notes.filter(note => note._id !== id);
-        setNotes(newNotes);
-        console.log("Note deleted successfully.");
-    };
+  // Add a Note
+  const addNote = async (title, description, tag) => {
+    try {
+      const response = await fetch(`${host}/api/notes/addnote`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "auth-token": localStorage.getItem("token") || "",
+        },
+        body: JSON.stringify({ title, description, tag }),
+      });
 
-    // Edit a note
-    const editNote = (id, updatedTitle, updatedDescription, updatedTag) => {
-        console.log("Editing note with ID:", id);
-        const updatedNotes = notes.map(note =>
-            note._id === id
-                ? { ...note, title: updatedTitle, description: updatedDescription, tag: updatedTag }
-                : note
-        );
-        setNotes(updatedNotes);
-        console.log("Note updated successfully.");
-    };
+      if (!response.ok) {
+        throw new Error("Failed to add note");
+      }
 
-    return (
-        <NoteContext.Provider value={{ notes, setNotes, addNote, deleteNote, editNote }}>
-            {props.children}
-        </NoteContext.Provider>
-    );
+      const note = await response.json();
+      setNotes((prevNotes) => [...prevNotes, note]); // ✅ Corrected state update
+      showAlert("Note added successfully", "success");
+    } catch (error) {
+      console.error("Error adding note:", error);
+      showAlert("Failed to add note", "danger");
+    }
+  };
+
+  // Delete a Note
+  const deleteNote = async (id) => {
+    try {
+      const response = await fetch(`${host}/api/notes/deletenote/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          "auth-token": localStorage.getItem("token") || "",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete note");
+      }
+
+      setNotes((prevNotes) => prevNotes.filter((note) => note._id !== id)); // ✅ Efficient state update
+      showAlert("Note deleted successfully", "success");
+    } catch (error) {
+      console.error("Error deleting note:", error);
+      showAlert("Failed to delete note", "danger");
+    }
+  };
+
+  // Edit a Note
+  const editNote = async (id, title, description, tag) => {
+    try {
+      const response = await fetch(`${host}/api/notes/updatenote/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "auth-token": localStorage.getItem("token") || "",
+        },
+        body: JSON.stringify({ title, description, tag }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update note");
+      }
+
+      setNotes((prevNotes) =>
+        prevNotes.map((note) =>
+          note._id === id ? { ...note, title, description, tag } : note
+        )
+      );
+      showAlert("Note updated successfully", "success");
+    } catch (error) {
+      console.error("Error updating note:", error);
+      showAlert("Failed to update note", "danger");
+    }
+  };
+
+  return (
+    <NoteContext.Provider value={{ notes, addNote, deleteNote, editNote, getNotes }}>
+      {alert && <Alert message={alert.message} type={alert.type} />} {/* ✅ Show alert */}
+      {props.children}
+    </NoteContext.Provider>
+  );
 };
 
 export default NoteState;

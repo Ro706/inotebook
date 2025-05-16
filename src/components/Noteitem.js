@@ -1,44 +1,26 @@
-import React, { useContext } from "react";
-import NoteContext from "../context/notes/noteContext"; // Corrected import
+import React, {useContext} from 'react'
+import noteContext from "../context/notes/noteContext"
 
-const NoteItem = (props) => {
-    const { note } = props;
-    const { title, description, tag, date } = note;
 
-    const { deleteNote, editNote } = useContext(NoteContext); // Single useContext call
-
-    const handleDelete = (e) => {
-        e.preventDefault();
-        deleteNote(note._id);
-    };
-
-    const handleEdit = (e) => {
-        e.preventDefault();
-        editNote(note._id);
-    };
-
+const Noteitem = (props) => {
+    const context = useContext(noteContext);
+    const { deleteNote } = context;
+    const { note, updateNote } = props;
     return (
-        <div className="col-md-3 d-inline-block mx-2">
-            <div className="card my-3" key={note._id}>
+        <div className="col-md-3">
+            <div className="card my-3">
                 <div className="card-body">
-                    <h5 className="card-title">{title}</h5>
-                    <p className="card-text">{description}</p>
-                    <p className="card-text">
-                        <small className="text-muted">{tag}</small>
-                    </p>
-                    <p className="card-text">
-                        <small className="text-muted">{date}</small>
-                    </p>
-                    <button className="btn btn-primary" onClick={handleEdit}>
-                        Edit
-                    </button>
-                    <button className="btn btn-danger mx-2" onClick={handleDelete}>
-                        Delete
-                    </button>
+                    <div className="d-flex align-items-center">
+                        <h5 className="card-title">{note.title}</h5>
+                        <button type="button" className="btn btn-primary mx-2" onClick={()=>{updateNote(note)}}>Update</button>
+                        <button type="button" className="btn btn-danger mx-2" onClick={()=>{deleteNote(note._id)}}>Delete</button>
+                    </div>
+                    <p className="card-text">{note.description}</p>
+
                 </div>
             </div>
         </div>
-    );
-};
+    )
+}
 
-export default NoteItem;
+export default Noteitem
